@@ -1,0 +1,52 @@
+.env
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# --- Virtual environments (uv) ---
+.venv/
+venv/
+
+# --- Packaging / build ---
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+
+# --- Test / lint / type-check caches ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Logs ---
+*.log
+
+# --- Secrets / keys ---
+*.pem
+*.key
+secrets/
+
+# --- IDE / editor ---
+.vscode/
+.idea/
+*.swp
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Generated audit reports ---
+p2p-auditor-reports/

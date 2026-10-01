@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*.env)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Edit(**/*.env)",
+      "Write(**/.env)",
+      "Write(**/.env.*)",
+      "Write(**/*.env)",
+      "Edit(.claude/settings.json)",
+      "Edit(.claude/settings.local.json)",
+      "Edit(.claude/hooks/block-env.js)",
+      "Write(.claude/settings.json)",
+      "Write(.claude/settings.local.json)",
+      "Write(.claude/hooks/block-env.js)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-env.js\""
+          }
+        ]
+      }
+    ]
+  }
+}

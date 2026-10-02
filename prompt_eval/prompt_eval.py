@@ -11,7 +11,7 @@ load_dotenv()
 
 client = Anthropic()
 model = "claude-haiku-4-5"
-DATASET_FILE = "dataset.json"
+DATASET_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dataset.json")
 
 
 # Helper functions

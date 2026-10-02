@@ -1,0 +1,50 @@
+[
+  {
+    "prompt_inputs": {
+      "height": "165",
+      "weight": "55",
+      "goal": "marathon completion",
+      "restrictions": "vegan"
+    },
+    "solution_criteria": [
+      "Meal plan covers one full day with at least 3 meals",
+      "Includes adequate carbohydrates for endurance training (approximately 6-8g per kg body weight)",
+      "All meals are plant-based with identifiable protein sources",
+      "Meals are realistic and compact in presentation"
+    ],
+    "task_description": "Write a compact, concise 1 day meal plan for a single athlete",
+    "scenario": "Testing with a lightweight endurance athlete (55kg, 165cm) training for marathon completion with vegan dietary restrictions - ensuring adequate carbohydrates, plant-based protein sources, and energy for long-distance performance"
+  },
+  {
+    "prompt_inputs": {
+      "height": "190",
+      "weight": "120",
+      "goal": "muscle gain",
+      "restrictions": "none"
+    },
+    "solution_criteria": [
+      "Meal plan covers a full day with at least 4 meals/eating occasions",
+      "Total daily protein meets or exceeds 2.4g per kg bodyweight (288g minimum)",
+      "Total daily calories support muscle gain for a 120kg athlete (approximately 3,500-4,000 calories)",
+      "Includes pre and post-workout nutrition timing with carbohydrates and protein"
+    ],
+    "task_description": "Write a compact, concise 1 day meal plan for a single athlete",
+    "scenario": "Testing with a heavyweight powerlifter (120kg, 190cm) focused on muscle gain with no dietary restrictions - verifying the plan includes sufficient protein, calories, and nutrient timing around workouts"
+  },
+  {
+    "prompt_inputs": {
+      "height": "175",
+      "weight": "75",
+      "goal": "fat loss",
+      "restrictions": "gluten-free, dairy-free"
+    },
+    "solution_criteria": [
+      "Plan includes exactly 4 meals/snacks that are both gluten-free and dairy-free",
+      "Total daily caloric intake is appropriate for fat loss (approximately 500-750 kcal deficit from estimated maintenance of ~2400-2600 kcal)",
+      "Macronutrient distribution supports muscle preservation during fat loss (protein emphasis ~1.6-2.2g per kg bodyweight)",
+      "All meals are realistic, single-day feasible, and include complete nutrient sources across the day"
+    ],
+    "task_description": "Write a compact, concise 1 day meal plan for a single athlete",
+    "scenario": "Testing with a moderately-sized athlete (75kg, 175cm) with multiple dietary restrictions (gluten-free and dairy-free) aiming for fat loss - confirming the plan is realistic, safe, and provides complete nutrition within constraints"
+  }
+]

@@ -1,0 +1,287 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Prompt Evaluation Report</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                margin: 0;
+                padding: 20px;
+                color: #333;
+            }
+            .header {
+                background-color: #f0f0f0;
+                padding: 20px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+            }
+            .summary-stats {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .stat-box {
+                background-color: #fff;
+                border-radius: 5px;
+                padding: 15px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                flex-basis: 30%;
+                min-width: 200px;
+            }
+            .stat-value {
+                font-size: 24px;
+                font-weight: bold;
+                margin-top: 5px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th {
+                background-color: #4a4a4a;
+                color: white;
+                text-align: left;
+                padding: 12px;
+            }
+            td {
+                padding: 10px;
+                border-bottom: 1px solid #ddd;
+                vertical-align: top;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            .output-cell {
+                white-space: pre-wrap;
+            }
+            .score {
+                font-weight: bold;
+                padding: 5px 10px;
+                border-radius: 3px;
+                display: inline-block;
+            }
+            .score-high {
+                background-color: #c8e6c9;
+                color: #2e7d32;
+            }
+            .score-medium {
+                background-color: #fff9c4;
+                color: #f57f17;
+            }
+            .score-low {
+                background-color: #ffcdd2;
+                color: #c62828;
+            }
+            .output {
+                overflow: auto;
+                white-space: pre-wrap;
+            }
+
+            .output pre {
+                background-color: #f5f5f5;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                padding: 10px;
+                margin: 0;
+                font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+                font-size: 14px;
+                line-height: 1.4;
+                color: #333;
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+                overflow-x: auto;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+
+            td {
+                width: 20%;
+            }
+            .score-col {
+                width: 80px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Prompt Evaluation Report</h1>
+            <div class="summary-stats">
+                <div class="stat-box">
+                    <div>Total Test Cases</div>
+                    <div class="stat-value">3</div>
+                </div>
+                <div class="stat-box">
+                    <div>Average Score</div>
+                    <div class="stat-value">8.0 / 10</div>
+                </div>
+                <div class="stat-box">
+                    <div>Pass Rate (≥7)</div>
+                    <div class="stat-value">100.0%</div>
+                </div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Prompt Inputs</th>
+                    <th>Solution Criteria</th>
+                    <th>Output</th>
+                    <th>Score</th>
+                    <th>Reasoning</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+            <tr>
+                <td>Testing with a lightweight endurance athlete (55kg, 165cm) training for marathon completion with vegan dietary restrictions - ensuring adequate carbohydrates, plant-based protein sources, and energy for long-distance performance</td>
+                <td class="prompt-inputs"><strong>height:</strong> 165<br><strong>weight:</strong> 55<br><strong>goal:</strong> marathon completion<br><strong>restrictions:</strong> vegan</td>
+                <td class="criteria">• Meal plan covers one full day with at least 3 meals<br>• Includes adequate carbohydrates for endurance training (approximately 6-8g per kg body weight)<br>• All meals are plant-based with identifiable protein sources<br>• Meals are realistic and compact in presentation</td>
+                <td class="output"><pre># One-Day Meal Plan: Marathon Completion, Vegan
+
+## Daily Targets
+- Calories: 2,715 kcal (maintenance × 1.75 for endurance)
+- Protein: 88 g (1.6 g/kg)
+- Carbs: 435 g (7.9 g/kg)
+- Fat: 68 g
+
+## Meals
+
+### Breakfast (7:00 AM)
+- Rolled oats: 100 g
+- Soy milk: 250 ml
+- Banana: 120 g
+- Peanut butter: 20 g
+- Agave nectar: 10 g
+540 kcal | P 16 g | C 78 g | F 16 g
+
+### Pre-Workout Snack (11:00 AM)
+- White bread: 80 g
+- Banana: 100 g
+- Almond butter: 15 g
+380 kcal | P 12 g | C 55 g | F 13 g
+
+### Post-Workout Lunch (2:00 PM)
+- Lentil pasta (cooked): 250 g
+- Chickpeas (cooked): 150 g
+- Spinach: 100 g
+- Tomato sauce: 200 ml
+- Olive oil: 12 ml
+695 kcal | P 28 g | C 102 g | F 18 g
+
+### Dinner (7:00 PM)
+- Tofu (firm, cooked): 180 g
+- White rice (cooked): 280 g
+- Broccoli: 150 g
+- Sesame oil: 10 ml
+- Soy sauce: 15 ml
+500 kcal | P 32 g | C 200 g | F 21 g
+
+Total: 2,715 kcal | P 88 g | C 435 g | F 68 g</pre></td>
+                <td class="score-col"><span class="score score-medium">7</span></td>
+                <td class="reasoning">The solution fully satisfies all mandatory requirements with clear presentation of calories, macros, and detailed meal timing. The vegan protein sources are appropriate and well-distributed. However, the caloric calculation methodology is questionable for practical application, and the meal structure deviates from typical conventions. The omission of hydration/electrolyte guidance is a notable gap for an endurance athlete, though not explicitly required. These issues fall within secondary criteria deficiencies rather than mandatory failures.</td>
+            </tr>
+        
+            <tr>
+                <td>Testing with a heavyweight powerlifter (120kg, 190cm) focused on muscle gain with no dietary restrictions - verifying the plan includes sufficient protein, calories, and nutrient timing around workouts</td>
+                <td class="prompt-inputs"><strong>height:</strong> 190<br><strong>weight:</strong> 120<br><strong>goal:</strong> muscle gain<br><strong>restrictions:</strong> none</td>
+                <td class="criteria">• Meal plan covers a full day with at least 4 meals/eating occasions<br>• Total daily protein meets or exceeds 2.4g per kg bodyweight (288g minimum)<br>• Total daily calories support muscle gain for a 120kg athlete (approximately 3,500-4,000 calories)<br>• Includes pre and post-workout nutrition timing with carbohydrates and protein</td>
+                <td class="output"><pre># One-Day Meal Plan: Muscle Gain
+
+## Daily Targets
+- Calories: 3,515 kcal (maintenance + 500)
+- Protein: 288 g (2.4 g/kg)
+- Carbs: 420 g
+- Fat: 117 g
+
+## Meals
+
+### Breakfast (7:00 AM)
+- Whole eggs: 3 (150 g)
+- Whole wheat bread: 80 g
+- Banana: 150 g
+- Almond butter: 30 g
+725 kcal | P 28 g | C 75 g | F 35 g
+
+### Pre-Workout Snack (11:00 AM)
+- Chicken breast: 150 g
+- White rice (cooked): 200 g
+- Honey: 20 g
+552 kcal | P 50 g | C 68 g | F 5 g
+
+### Post-Workout Lunch (2:30 PM)
+- Ground beef (90/10): 200 g
+- Sweet potato: 300 g
+- Olive oil: 15 ml
+- Mixed vegetables: 150 g
+868 kcal | P 65 g | C 95 g | F 29 g
+
+### Dinner (7:30 PM)
+- Salmon fillet: 180 g
+- Jasmine rice (cooked): 200 g
+- Avocado: 100 g
+- Broccoli: 150 g
+770 kcal | P 45 g | C 82 g | F 28 g
+
+Total: 3,515 kcal | P 288 g | C 420 g | F 117 g</pre></td>
+                <td class="score-col"><span class="score score-high">8</span></td>
+                <td class="reasoning">The solution fully satisfies all mandatory requirements: it provides daily caloric total, complete macronutrient breakdown, 4 meals with exact foods/portions/timing, meets the 288g protein minimum, achieves appropriate caloric intake for muscle gain, and includes meals labeled as pre/post-workout with carbs and protein. However, the pre/post-workout designation lacks clarity without specified training times, and the format could be more compact. The nutrition targets and meal composition are scientifically sound and well-calculated. This is a competent, criteria-compliant solution with minor presentation issues.</td>
+            </tr>
+        
+            <tr>
+                <td>Testing with a moderately-sized athlete (75kg, 175cm) with multiple dietary restrictions (gluten-free and dairy-free) aiming for fat loss - confirming the plan is realistic, safe, and provides complete nutrition within constraints</td>
+                <td class="prompt-inputs"><strong>height:</strong> 175<br><strong>weight:</strong> 75<br><strong>goal:</strong> fat loss<br><strong>restrictions:</strong> gluten-free, dairy-free</td>
+                <td class="criteria">• Plan includes exactly 4 meals/snacks that are both gluten-free and dairy-free<br>• Total daily caloric intake is appropriate for fat loss (approximately 500-750 kcal deficit from estimated maintenance of ~2400-2600 kcal)<br>• Macronutrient distribution supports muscle preservation during fat loss (protein emphasis ~1.6-2.2g per kg bodyweight)<br>• All meals are realistic, single-day feasible, and include complete nutrient sources across the day</td>
+                <td class="output"><pre># One-Day Meal Plan: Fat Loss, Gluten-Free & Dairy-Free
+
+## Daily Targets
+- Calories: 2,040 kcal (maintenance 2,590 − 550)
+- Protein: 165 g (2.2 g/kg)
+- Carbs: 220 g
+- Fat: 62 g
+
+## Meals
+
+### Breakfast (7:00 AM)
+- Rice cereal: 60 g
+- Almond milk: 240 ml
+- Banana: 120 g
+- Coconut oil: 5 ml
+298 kcal | P 6 g | C 50 g | F 8 g
+
+### Pre-Workout Snack (11:30 AM)
+- Rice cakes: 40 g
+- Almond butter: 30 g
+- Honey: 10 g
+291 kcal | P 9 g | C 32 g | F 14 g
+
+### Post-Workout Lunch (2:00 PM)
+- Chicken breast: 150 g
+- White rice (cooked): 280 g
+- Spinach: 100 g
+- Olive oil: 10 ml
+688 kcal | P 58 g | C 74 g | F 18 g
+
+### Dinner (7:00 PM)
+- Turkey mince: 140 g
+- Sweet potato: 220 g
+- Carrots: 150 g
+- Olive oil: 8 ml
+763 kcal | P 92 g | C 64 g | F 22 g
+
+Total: 2,040 kcal | P 165 g | C 220 g | F 62 g</pre></td>
+                <td class="score-col"><span class="score score-high">9</span></td>
+                <td class="reasoning">The solution successfully satisfies all mandatory requirements with a clear structure including daily totals, macro breakdown, and 4 properly timed meals with exact portions. All foods are confirmed gluten-free and dairy-free. The 2,040 kcal target represents a reasonable 500-550 kcal deficit for fat loss, and protein intake at 2.2g/kg is optimal for muscle retention. However, the maintenance calorie baseline lacks transparency (no activity multiplier shown), and the carb timing could be refined to better support athletic performance. These are secondary concerns that don't violate stated criteria but represent minor optimization gaps.</td>
+            </tr>
+        
+            </tbody>
+        </table>
+    </body>
+    </html>
+    

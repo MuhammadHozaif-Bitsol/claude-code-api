@@ -16,10 +16,9 @@ def add_assistant_message(messages, text):
 
 
 def chat(messages):
+    system = "You are a math tutor. you do not instantly give the answer but gently guide the student to the answer.If you find they cant  answer after many turns only then do you answer "
     message = client.messages.create(
-        model=model,
-        max_tokens=1000,
-        messages=messages,
+        model=model, max_tokens=1000, messages=messages, system=system
     )
     return message.content[0].text
 

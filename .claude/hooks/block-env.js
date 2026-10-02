@@ -1,45 +1,50 @@
-#!/usr/bin/env node
-// PreToolUse hook: blocks Claude from touching any .env file (and from disabling this guard).
-// Exit code 2 = block the tool call; stderr is shown to Claude as the reason.
-// Fails CLOSED: any parse/runtime error also blocks.
+// PreToolUse hook: keeps Claude away from .env files and stops it disabling this guard.
+// Exit 2 = block the call (stderr is shown to Claude). Errors fail closed.
+const path = require("path");
 
-const BLOCK = (reason) => {
-  process.stderr.write(`BLOCKED by .claude/hooks/block-env.js: ${reason}\n`);
+const norm = (p) => path.resolve(p).replace(/\\/g, "/").toLowerCase();
+const PROJECT = norm(process.env.CLAUDE_PROJECT_DIR || process.cwd());
+const GUARDS = [
+  ".claude/settings.json",
+  ".claude/settings.local.json",
+  ".claude/hooks/block-env.js",
+].map((p) => PROJECT + "/" + p);
+// relative mention of this project's guard files in a shell command (not ~/.claude/...)
+const GUARD_IN_SHELL =
+  /(^|[\s"'=])(\.\/)?\.claude[\/\\](settings(\.local)?\.json|hooks[\/\\]block-env\.js)|block-env\.js/i;
+
+const ENV_PATH =
+  /(^|[\s"'`=:;,(){}\[\]<>|&*\/\\@!$])\.env(?![\w-])(\.[\w.-]*)?/i;
+const ENV_NAMES = [".env", ".env.local", ".env.production", ".env.development"];
+
+function block(reason) {
+  process.stderr.write("BLOCKED by block-env hook: " + reason + "\n");
   process.exit(2);
-};
+}
 
-// `.env` as a path component: start/separator before it, end/separator/suffix after it.
-// Matches: .env  ./.env  src\.env  .env.local  .env.production  "*.env"  .ENV
-// Does NOT match: process.env, os.environ, .venv, myenv
-const ENV_PATH = /(^|[\s"'`=:;,(){}\[\]<>|&*\/\\@!$])\.env(?![\w-])(\.[\w.-]*)?/i;
-
-// Files guarding this rule — Claude must not be able to edit/disable them.
-const GUARD_FILES = /\.claude[\/\\](hooks[\/\\]block-env\.js|settings(\.local)?\.json)/i;
-
-// Glob/wildcard tricks in shell commands, e.g. `cat .e*`, `type .en?`, `cat .[e]nv`, `cat ?env`
-function globHitsEnv(cmd) {
-  const tokens = cmd.split(/[\s"'`;|&()<>]+/).filter(Boolean);
-  for (const tok of tokens) {
-    const base = tok.split(/[\/\\]/).pop();
-    if (!/[*?\[{]/.test(base)) continue;
-    let re = "";
-    for (const ch of base) {
-      if (ch === "*") re += ".*";
-      else if (ch === "?") re += ".";
-      else if (ch === "[" || ch === "]" || ch === "-" || ch === "!" || ch === "^") re += ch === "!" ? "^" : ch;
-      else if (ch === "{" ) re += "(";
-      else if (ch === "}") re += ")";
-      else if (ch === ",") re += "|";
-      else re += ch.replace(/[.+^$()|\\]/g, "\\$&");
-    }
-    try {
-      const r = new RegExp(`^${re}$`, "i");
-      if ([".env", ".env.local", ".env.production", ".env.development"].some((n) => r.test(n))) return tok;
-    } catch {
-      return tok; // unparseable glob in a shell command — be safe
-    }
+// Would this wildcard token match a .env file?
+// leadingDot: in bash, * ? [..] never match a leading dot, so only globs starting with "." count.
+function globHitsEnv(token, leadingDot) {
+  const base = token.split(/[\/\\]/).pop();
+  if (!/[*?\[{]/.test(base)) return false;
+  if (leadingDot && !base.startsWith(".")) return false;
+  let re = "";
+  for (const ch of base) {
+    if (ch === "*") re += ".*";
+    else if (ch === "?") re += ".";
+    else if (ch === "[" || ch === "]" || ch === "-") re += ch;
+    else if (ch === "!") re += "^";
+    else if (ch === "{") re += "(";
+    else if (ch === "}") re += ")";
+    else if (ch === ",") re += "|";
+    else re += ch.replace(/[.+^$()|\\]/g, "\\$&");
   }
-  return null;
+  try {
+    const r = new RegExp("^(" + re + ")$", "i");
+    return ENV_NAMES.some((n) => r.test(n));
+  } catch {
+    return false; // not a real glob (e.g. f"{x}" or arr[0) - don't block
+  }
 }
 
 let raw = "";
@@ -50,39 +55,60 @@ process.stdin.on("end", () => {
     const data = JSON.parse(raw || "{}");
     const tool = data.tool_name || "";
     const input = data.tool_input || {};
-    const text = JSON.stringify(input).replace(/\\\\/g, "\\"); // un-double JSON backslashes
+    const isShell = tool === "Bash" || tool === "PowerShell";
+    const isWrite = ["Edit", "Write", "NotebookEdit"].includes(tool);
 
-    if (ENV_PATH.test(text)) BLOCK(`${tool} references a .env file. Access to .env files is forbidden.`);
+    // For file-writing tools only the TARGET PATH matters, so writing code
+    // or a .gitignore that merely mentions .env is fine.
+    let fields = [];
+    if (isWrite) fields = [input.file_path, input.notebook_path];
+    else
+      (function walk(v) {
+        if (typeof v === "string") fields.push(v);
+        else if (v && typeof v === "object") Object.values(v).forEach(walk);
+      })(input);
+    fields = fields.filter((f) => typeof f === "string");
 
-    // Collect any string field values (command, path, pattern, glob, etc.)
-    const values = [];
-    (function walk(v) {
-      if (typeof v === "string") values.push(v);
-      else if (v && typeof v === "object") Object.values(v).forEach(walk);
-    })(input);
-
-    // Shell tools: wildcard / encoding tricks
-    if (/^(Bash|PowerShell)$/.test(tool)) {
-      const cmd = values.join(" ");
-      const hit = globHitsEnv(cmd);
-      if (hit) BLOCK(`${tool} uses a wildcard (${hit}) that could match a .env file.`);
-      if (/\b(dotenv|load_dotenv|python-dotenv)\b/i.test(cmd)) BLOCK(`${tool} tries to load a .env file via dotenv.`);
-      if (/\\x2e|\\056|\[char\]\s*46|fromcharcode|base64\s+(-d|--decode)|frombase64string/i.test(cmd))
-        BLOCK(`${tool} uses character/base64 encoding that could be used to reach a .env file.`);
+    // Check raw values (not JSON text), so a newline before .env can't slip through.
+    for (const f of fields) {
+      if (ENV_PATH.test(f)) block(tool + " references a .env file.");
+      if (isShell && ENV_PATH.test(f.replace(/["'`\\]/g, "")))
+        block(tool + " references a .env file (quoting trick).");
     }
 
-    // Glob/Grep tools: patterns that would match .env
-    if (/^(Glob|Grep)$/.test(tool)) {
-      const g = globHitsEnv(values.join(" "));
-      if (g) BLOCK(`${tool} pattern (${g}) could match a .env file.`);
+    if (isShell) {
+      const cmd = fields.join(" ");
+      for (const tok of cmd.split(/[\s"'`;|&()<>]+/))
+        if (tok && globHitsEnv(tok, tool === "Bash"))
+          block(tool + " wildcard (" + tok + ") could match a .env file.");
+      if (
+        /load_dotenv|dotenv_values|dotenv\/config|\bdotenv\s+(get|list|run)\b/i.test(
+          cmd,
+        )
+      )
+        block(tool + " tries to load a .env file via dotenv.");
+      if (
+        /\\x2e|\\056|\[char\]\s*46|fromcharcode|base64\s+(-d|--decode)|frombase64string/i.test(
+          cmd,
+        )
+      )
+        block(tool + " uses encoding tricks that could reach a .env file.");
+      if (GUARD_IN_SHELL.test(cmd))
+        block(tool + " would touch the .env guard's settings or script.");
     }
 
-    // Protect the guard itself from being edited or removed
-    if (GUARD_FILES.test(text) && !/^(Read|Glob|Grep)$/.test(tool))
-      BLOCK(`${tool} would modify the .env protection hook/settings. This is not allowed.`);
+    if (tool === "Glob")
+      for (const seg of String(input.pattern || "").split(/[\/\\]/))
+        if (globHitsEnv(seg, true))
+          block("Glob pattern could match a .env file.");
+    if (tool === "Grep" && input.glob && globHitsEnv(String(input.glob), true))
+      block("Grep glob could match a .env file.");
+
+    if (isWrite && fields[0] && GUARDS.includes(norm(fields[0])))
+      block(tool + " would modify the .env guard.");
 
     process.exit(0);
   } catch (e) {
-    BLOCK(`hook error (failing closed): ${e.message}`);
+    block("hook error, failing closed: " + e.message);
   }
 });

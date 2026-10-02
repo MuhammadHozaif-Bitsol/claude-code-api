@@ -1,0 +1,14 @@
+[
+  {
+    "task": "Extract the AWS region from an S3 bucket URL like 's3://my-bucket.s3.us-west-2.amazonaws.com/path/to/object'",
+    "format": "regex"
+  },
+  {
+    "task": "Create a CloudFormation template JSON object for an S3 bucket with versioning enabled and public access blocked",
+    "format": "json"
+  },
+  {
+    "task": "Write a Python function that takes an IAM ARN string and returns the AWS account ID extracted from it",
+    "format": "python"
+  }
+]
